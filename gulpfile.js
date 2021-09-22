@@ -114,6 +114,9 @@ var jsTasks = lazypipe()
   .pipe(optimizejs)
   .pipe(header, banner.main, { package: package })
   .pipe(dest, paths.scripts.output);
+var bootstrapJsTasks = lazypipe()
+  .pipe(header, banner.main, { package: package })
+  .pipe(dest, paths.scripts.output);
 
 // Lint, minify, and concatenate scripts
 var buildScripts = function (done) {
@@ -153,6 +156,23 @@ var buildScripts = function (done) {
 
       // Otherwise, process the file
       return stream.pipe(jsTasks());
+    })
+  );
+};
+
+// Lint, minify, and concatenate scripts
+var buildBootstrapScripts = function (done) {
+  // Make sure this feature is activated before running
+  if (!settings.scripts) return done();
+
+  // Run tasks on script files
+  return src(paths.scripts.input).pipe(
+    flatmap(function (stream, file) {
+      // If the file is a directory
+      src(["./node_modules/bootstrap/dist/js/bootstrap.min.js"]).pipe(
+        bootstrapJsTasks()
+      );
+      return stream;
     })
   );
 };
@@ -259,7 +279,14 @@ var watchSource = function (done) {
 // gulp
 exports.default = series(
   cleanDist,
-  parallel(buildScripts, lintScripts, buildStyles, buildSVGs, copyFiles)
+  parallel(
+    buildScripts,
+    buildBootstrapScripts,
+    lintScripts,
+    buildStyles,
+    buildSVGs,
+    copyFiles
+  )
 );
 
 // Watch and reload

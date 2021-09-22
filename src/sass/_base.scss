@@ -4,9 +4,11 @@
 
 body {
   font-size: 125%;
+  width: 100vw;
+  height: 100vh;
+}
+main {
   margin: 0 auto;
-  max-width: 42em;
-  width: 88%;
 }
 
 input,
@@ -14,10 +16,4 @@ textarea,
 select,
 button {
   font: inherit;
-}
-
-header {
-  display: grid;
-  place-content: center;
-  height: 100vh;
 }
